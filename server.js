@@ -1,30 +1,61 @@
 const express = require("express");
-// const bodyParser = require("body-parser"); /* deprecated */
 const cors = require("cors");
 
 const app = express();
 
 var corsOptions = {
-  origin: "http://localhost:3000"
+  origin: "http://localhost:8081"
 };
 
 app.use(cors(corsOptions));
 
 // parse requests of content-type - application/json
-app.use(express.json()); /* bodyParser.json() is deprecated */
+app.use(express.json());
 
 // parse requests of content-type - application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: true })); /* bodyParser.urlencoded() is deprecated */
+app.use(express.urlencoded({ extended: true }));
+
+const db = require("./blog/models");
+db.mongoose
+  .connect(db.url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => {
+    console.log("Connected to the database!");
+  })
+  .catch(err => {
+    console.log("Cannot connect to the database!", err);
+    process.exit();
+  });
+
+  // const mongoose = require('mongoose')
+
+  // const url = `Connection String`;
+  
+  // const connectionParams={
+  //     useNewUrlParser: true,
+  //     useCreateIndex: true,
+  //     useUnifiedTopology: true 
+  // }
+  // mongoose.connect(url,connectionParams)
+  //     .then( () => {
+  //         console.log('Connected to the database ')
+  //     })
+  //     .catch( (err) => {
+  //         console.error(`Error connecting to the database. n${err}`);
+  //     })
+
 
 // simple route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to Mysql Nodejs Connection application." });
+  res.json({ message: "Welcome to Tutorial CRUD application." });
 });
 
-require("./app/routes/tutorial.routes.js")(app);
-require("./blog/routes/blog_users.routes.js")(app);
-require("./blog/routes/blog_posts.routes.js")(app);
-require("./blog/routes/blog_comments.routes.js")(app);
+// require("./app/routes/turorial.routes")(app);
+require("./blog/routes/blogusers.routes")(app);
+require("./blog/routes/blogpost.routes")(app);
+require("./blog/routes/blogcomment.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
